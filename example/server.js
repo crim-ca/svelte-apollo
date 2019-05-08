@@ -1,4 +1,7 @@
-const { GraphQLServer } = require('graphql-yoga');
+const { GraphQLServer, PubSub } = require('graphql-yoga');
+
+const pubsub = new PubSub();
+const CHANGE = 'change';
 
 // Source: https://thegreatestbooks.org/
 const books = [
@@ -23,6 +26,10 @@ const typeDefs = `
   type Query {
     books: [Book!]!
   }
+
+  type Subscription {
+    foo_changed: String
+  }
 `;
 
 const resolvers = {
@@ -31,12 +38,20 @@ const resolvers = {
       await latency();
       return books;
     }
+  },
+  Subscription: {
+    foo_changed: {
+      subscribe: () => pubsub.asyncIterator([CHANGE]),
+    }
   }
 };
 
 const server = new GraphQLServer({ typeDefs, resolvers });
 server.start({ port: 4001, debug: true }, () => {
   console.log('GraphQL server listening on localhost:4001');
+  setInterval(() => {
+    pubsub.publish(CHANGE, { foo_changed: `payload ${Date.now()}` })
+  }, 2000);
 });
 
 async function latency(ms = 100) {

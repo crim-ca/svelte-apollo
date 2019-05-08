@@ -12,3 +12,9 @@ export const BOOKS = gql`
     }
   }
 `;
+
+export const CHANGE_SUBS = gql`
+  subscription ListenChange {
+    foo_changed
+  }
+`;

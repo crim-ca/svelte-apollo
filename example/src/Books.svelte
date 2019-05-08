@@ -1,6 +1,6 @@
 <script context="module">
   import { gql } from 'apollo-boost';
-  import { client, BOOKS } from './data';
+  import { client, BOOKS, CHANGE_SUBS } from './data';
 
   export async function preload() {
     return {
@@ -9,12 +9,13 @@
   }
 </script>
 <script>
-  import { getClient, restore, query } from '../../';
+  import { getClient, restore, query, subscribe } from '../../';
   
   export let cache;
   restore(client, BOOKS, cache.data);
 
   const books = query(client, { query: BOOKS });
+  const change = subscribe(client, { query: CHANGE_SUBS });
 </script>
 
 <ul>
@@ -30,3 +31,12 @@
     <li>Error loading books: {error}</li>
   {/await}
 </ul>
+
+<section>
+<h2>subscription</h2>
+{#await $change}
+awaiting change
+{:then result}
+received "{result.data.listen_change}"
+{/await}
+</section>
