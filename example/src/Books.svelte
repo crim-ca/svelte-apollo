@@ -37,6 +37,6 @@
 {#await $change}
 awaiting change
 {:then result}
-received "{result.data.listen_change}"
+received "{result.data.foo_changed}"
 {/await}
 </section>
